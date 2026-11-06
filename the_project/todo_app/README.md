@@ -4,8 +4,14 @@ Web server that responds to a GET request sent to the / url. Port is set with en
 
 ## Run in k3d
 
+Create the cluster with node port 30080 mapped to localhost:8082:
+
 ```bash
-kubectl apply -f manifests/deployment.yaml
-kubectl port-forward deployment/todo-app-dep 3000:3000
+k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 ```
-Response can be viewed from http://localhost:3000
+
+
+```bash
+kubectl apply -f manifests/
+```
+Response can be viewed from http://localhost:8082
