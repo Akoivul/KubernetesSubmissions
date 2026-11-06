@@ -12,9 +12,20 @@ spec:
       labels:
         app: log-output
     spec:
+      volumes:
+        - name: shared-files
+          emptyDir: {}
       containers:
-        - name: log-output
-          image: akoivul/log-output:1.7
+        - name: writer
+          image: akoivul/log-output-writer:1.10
+          volumeMounts:
+            - name: shared-files
+              mountPath: /files
+        - name: reader
+          image: akoivul/log-output-reader:1.10
           env:
             - name: PORT
               value: "3000"
+          volumeMounts:
+            - name: shared-files
+              mountPath: /files

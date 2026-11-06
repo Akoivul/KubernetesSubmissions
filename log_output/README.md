@@ -1,6 +1,6 @@
 # Log output
 
-Prints a random string generated at startup with a timestamp every 5 seconds. Current status can be seen at `/`.
+Two containers within a single pod and share a volume. log-writer generates a random string on startup and writes a line with the random string and timestamp to a file every 5 seconds. log-reader reads the file and provides the content at `/`.
 
 ## Run in k3d
 
@@ -9,4 +9,4 @@ k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 kubectl apply -f manifests/
 ```
 
-The current status can be seen at http://localhost:8081 after a short time.
+View at http://localhost:8081 after a short time.
