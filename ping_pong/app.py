@@ -17,6 +17,8 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(f"pong {counter}".encode())
         counter += 1
+        with open("/files/pingpong.txt", "w") as f:
+            f.write(str(counter))
 
 
 signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))

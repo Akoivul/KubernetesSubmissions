@@ -14,15 +14,16 @@ spec:
     spec:
       volumes:
         - name: shared-files
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: shared-claim
       containers:
         - name: writer
-          image: akoivul/log-output-writer:1.10
+          image: akoivul/log-output-writer:1.11
           volumeMounts:
             - name: shared-files
               mountPath: /files
         - name: reader
-          image: akoivul/log-output-reader:1.10
+          image: akoivul/log-output-reader:1.11
           env:
             - name: PORT
               value: "3000"
