@@ -10,15 +10,17 @@ counter = 0
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         global counter
-        if self.path != "/pingpong":
+        if self.path == "/pingpong":
+            body = f"pong {counter}"
+            counter += 1
+        elif self.path == "/pings":
+            body = str(counter)
+        else:
             self.send_error(404)
             return
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(f"pong {counter}".encode())
-        counter += 1
-        with open("/files/pingpong.txt", "w") as f:
-            f.write(str(counter))
+        self.wfile.write(body.encode())
 
 
 signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))

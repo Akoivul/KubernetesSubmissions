@@ -1,19 +1,28 @@
 import signal
 import sys
+import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
-def read(path, default=""):
+def read_log():
     try:
-        with open(path) as f:
+        with open("/files/log.txt") as f:
             return f.read()
     except FileNotFoundError:
-        return default
+        return ""
+
+
+def get_pings():
+    try:
+        with urllib.request.urlopen("http://ping-pong-svc:2346/pings") as r:
+            return r.read().decode()
+    except Exception:
+        return "unavailable"
 
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        body = f"{read('/files/log.txt')}\nPing / Pongs: {read('/files/pingpong.txt', '0')}"
+        body = f"{read_log()}\nPing / Pongs: {get_pings()}"
         self.send_response(200)
         self.end_headers()
         self.wfile.write(body.encode())
