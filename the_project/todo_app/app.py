@@ -7,7 +7,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 PORT = int(os.environ.get("PORT", 3000))
 IMAGE = "/files/image.jpg"
-MAX_AGE = 600  # 10 minutes
+MAX_AGE = 600
 
 HTML = b"""<!DOCTYPE html>
 <html>
@@ -18,6 +18,15 @@ HTML = b"""<!DOCTYPE html>
   <body>
     <h1>Todo app</h1>
     <img src="/image" width="600">
+    <form>
+      <input type="text" name="todo" maxlength="140">
+      <button type="button">Send</button>
+    </form>
+    <ul>
+      <li>Learn JavaScript</li>
+      <li>Learn React</li>
+      <li>Build a project</li>
+    </ul>
   </body>
 </html>
 """
