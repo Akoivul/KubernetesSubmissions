@@ -5,7 +5,7 @@ import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 
-PORT = int(os.environ.get("PORT", 3000))
+PORT = int(os.environ["PORT"])
 todos = []
 
 

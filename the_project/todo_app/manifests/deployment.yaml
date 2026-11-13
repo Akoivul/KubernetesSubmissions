@@ -19,10 +19,10 @@ spec:
             claimName: todo-image-claim
       containers:
         - name: todo-app
-          image: akoivul/todo-app:2.2
-          env:
-            - name: PORT
-              value: "3000"
+          image: akoivul/todo-app:2.6
+          envFrom:
+            - configMapRef:
+                name: todo-app-config
           volumeMounts:
             - name: image-cache
               mountPath: /files

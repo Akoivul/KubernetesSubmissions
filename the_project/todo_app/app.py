@@ -7,10 +7,11 @@ import time
 import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-PORT = int(os.environ.get("PORT", 3000))
-BACKEND = "http://todo-backend-svc:2345/todos"
-IMAGE = "/files/image.jpg"
-MAX_AGE = 600
+PORT = int(os.environ["PORT"])
+BACKEND_URL = os.environ["BACKEND_URL"]
+IMAGE_URL = os.environ["IMAGE_URL"]
+IMAGE_PATH = os.environ["IMAGE_PATH"]
+IMAGE_MAX_AGE = int(os.environ["IMAGE_MAX_AGE"])
 
 HTML = """<!DOCTYPE html>
 <html>
@@ -34,18 +35,18 @@ HTML = """<!DOCTYPE html>
 
 
 def refresh_image():
-    if os.path.exists(IMAGE) and time.time() - os.path.getmtime(IMAGE) < MAX_AGE:
+    if os.path.exists(IMAGE_PATH) and time.time() - os.path.getmtime(IMAGE_PATH) < IMAGE_MAX_AGE:
         return
     try:
-        urllib.request.urlretrieve("https://picsum.photos/1200", IMAGE + ".tmp")
-        os.replace(IMAGE + ".tmp", IMAGE)
+        urllib.request.urlretrieve(IMAGE_URL, IMAGE_PATH + ".tmp")
+        os.replace(IMAGE_PATH + ".tmp", IMAGE_PATH)
     except Exception as e:
         print(f"Could not fetch a new image: {e}", flush=True)
 
 
 def get_todos():
     try:
-        with urllib.request.urlopen(BACKEND) as r:
+        with urllib.request.urlopen(BACKEND_URL) as r:
             return json.load(r)
     except Exception as e:
         print(f"Could not fetch todos: {e}", flush=True)
@@ -62,7 +63,7 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(HTML.replace("{todos}", items).encode())
         elif self.path == "/image":
-            with open(IMAGE, "rb") as f:
+            with open(IMAGE_PATH, "rb") as f:
                 data = f.read()
             self.send_response(200)
             self.send_header("Content-Type", "image/jpeg")
