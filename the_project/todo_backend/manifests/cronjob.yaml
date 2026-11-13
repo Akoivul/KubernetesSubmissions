@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: wikipedia-todo
+  namespace: project
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: wikipedia-todo
+              image: curlimages/curl:8.17.0
+              env:
+                - name: RANDOM_ARTICLE_URL
+                  value: "https://en.wikipedia.org/wiki/Special:Random"
+                - name: BACKEND_URL
+                  value: "http://todo-backend-svc:2345/todos"
+                - name: USER_AGENT
+                  value: "todo-cronjob/1.0 (DevOps with Kubernetes course exercise)"
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  URL=$(curl -s -o /dev/null -w '%{redirect_url}' -A "$USER_AGENT" "$RANDOM_ARTICLE_URL")
+                  echo "Random article: $URL"
+                  curl -s --data-urlencode "todo=Read $URL" "$BACKEND_URL"
+          restartPolicy: OnFailure
