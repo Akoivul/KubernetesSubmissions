@@ -15,7 +15,12 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: akoivul/todo-backend:2.6
+          image: akoivul/todo-backend:2.8
           env:
             - name: PORT
               value: "3000"
+          envFrom:
+            - configMapRef:
+                name: todo-db-config
+            - secretRef:
+                name: todo-db-secret

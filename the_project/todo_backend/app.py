@@ -2,11 +2,29 @@ import json
 import os
 import signal
 import sys
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 
+import psycopg
+
 PORT = int(os.environ["PORT"])
-todos = []
+
+
+def query(sql, params=()):
+    with psycopg.connect(autocommit=True) as conn:
+        cur = conn.execute(sql, params)
+        return cur.fetchall() if cur.description else None
+
+
+def init_db():
+    while True:
+        try:
+            query("CREATE TABLE IF NOT EXISTS todos (id SERIAL PRIMARY KEY, content TEXT NOT NULL)")
+            return
+        except psycopg.OperationalError as e:
+            print(f"Waiting for database: {e}", flush=True)
+            time.sleep(2)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -14,6 +32,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path != "/todos":
             self.send_error(404)
             return
+        todos = [row[0] for row in query("SELECT content FROM todos ORDER BY id")]
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
@@ -26,7 +45,7 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", 0))
         todo = parse_qs(self.rfile.read(length).decode()).get("todo", [""])[0].strip()
         if todo and len(todo) <= 140:
-            todos.append(todo)
+            query("INSERT INTO todos (content) VALUES (%s)", (todo,))
         self.send_response(303)
         self.send_header("Location", "/")
         self.end_headers()
@@ -34,5 +53,6 @@ class Handler(BaseHTTPRequestHandler):
 
 signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
 
+init_db()
 print(f"Server started in port {PORT}", flush=True)
 HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
