@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ping-pong-dep
+  name: ping-pong
   namespace: exercises
 spec:
   replicas: 1
@@ -15,7 +15,9 @@ spec:
     spec:
       containers:
         - name: ping-pong
-          image: akoivul/ping-pong:2.1
+          image: akoivul/ping-pong:2.7
           env:
             - name: PORT
               value: "3000"
+            - name: DATABASE_URL
+              value: "postgres://postgres:password@postgres-svc:5432/postgres"
