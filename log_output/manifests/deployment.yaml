@@ -16,6 +16,9 @@ spec:
       volumes:
         - name: shared-files
           emptyDir: {}
+        - name: config
+          configMap:
+            name: log-output-config
       containers:
         - name: writer
           image: akoivul/log-output-writer:1.11
@@ -23,7 +26,15 @@ spec:
             - name: shared-files
               mountPath: /files
         - name: reader
-          image: akoivul/log-output-reader:2.1
+          image: akoivul/log-output-reader:2.5
+          env:
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: log-output-config
+                  key: MESSAGE
           volumeMounts:
             - name: shared-files
               mountPath: /files
+            - name: config
+              mountPath: /config

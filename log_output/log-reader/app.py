@@ -1,3 +1,4 @@
+import os
 import signal
 import sys
 import urllib.request
@@ -12,6 +13,11 @@ def read_log():
         return ""
 
 
+def read_info():
+    with open("/config/information.txt") as f:
+        return f.read().strip()
+
+
 def get_pings():
     try:
         with urllib.request.urlopen("http://ping-pong-svc:2346/pings") as r:
@@ -22,7 +28,11 @@ def get_pings():
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        body = f"{read_log()}\nPing / Pongs: {get_pings()}"
+        body = (
+            f"file content: {read_info()}\n"
+            f"env variable: MESSAGE={os.environ.get('MESSAGE')}\n"
+            f"{read_log()}\nPing / Pongs: {get_pings()}"
+        )
         self.send_response(200)
         self.end_headers()
         self.wfile.write(body.encode())
