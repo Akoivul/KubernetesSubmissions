@@ -44,8 +44,14 @@ class Handler(BaseHTTPRequestHandler):
             return
         length = int(self.headers.get("Content-Length", 0))
         todo = parse_qs(self.rfile.read(length).decode()).get("todo", [""])[0].strip()
-        if todo and len(todo) <= 140:
-            query("INSERT INTO todos (content) VALUES (%s)", (todo,))
+        if not todo or len(todo) > 140:
+            print(f"Rejected todo ({len(todo)} characters): {todo}", flush=True)
+            self.send_response(400)
+            self.end_headers()
+            self.wfile.write(b"Todo must be 1-140 characters\n")
+            return
+        query("INSERT INTO todos (content) VALUES (%s)", (todo,))
+        print(f"Added todo: {todo}", flush=True)
         self.send_response(303)
         self.send_header("Location", "/")
         self.end_headers()
