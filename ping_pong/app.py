@@ -29,13 +29,11 @@ def init_db():
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == "/pingpong":
+        if self.path == "/":
             counter = query("UPDATE counter SET value = value + 1 RETURNING value - 1")[0]
             body = f"pong {counter}"
         elif self.path == "/pings":
             body = str(query("SELECT value FROM counter")[0])
-        elif self.path == "/":
-            body = "ok"
         else:
             self.send_error(404)
             return
