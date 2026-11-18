@@ -15,11 +15,13 @@ View at http://localhost:8081/pingpong after a short time.
 
 ## Run in GKE
 
+Make sure the cluster has Gateway API enabled.
+
 ```bash
 kubectl create namespace exercises
 kubectl apply -f manifests/
 kubectl apply -f ../log_output/manifests/
-kubectl get ingress -n exercises
+kubectl get gateway -n exercises
 ```
 
 View at http://ADDRESS/pingpong after some time. (See ADDRESS with the last command)
