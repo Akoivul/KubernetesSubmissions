@@ -12,3 +12,14 @@ kubectl apply -f ../ping_pong/manifests/
 ```
 
 View at http://localhost:8081 after a short time. Increase the count by making requests to http://localhost:8081/pingpong
+
+## Run in GKE
+
+```bash
+kubectl create namespace exercises
+kubectl apply -f manifests/
+kubectl apply -f ../ping_pong/manifests/
+kubectl get ingress -n exercises
+```
+
+View at http://ADDRESS/ after some minutes. Increase the count by making requests to http://ADDRESS/pingpong (See ADDRESS with the last command)

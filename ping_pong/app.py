@@ -34,6 +34,8 @@ class Handler(BaseHTTPRequestHandler):
             body = f"pong {counter}"
         elif self.path == "/pings":
             body = str(query("SELECT value FROM counter")[0])
+        elif self.path == "/":
+            body = "ok"
         else:
             self.send_error(404)
             return

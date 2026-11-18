@@ -18,7 +18,8 @@ View at http://localhost:8081/pingpong after a short time.
 ```bash
 kubectl create namespace exercises
 kubectl apply -f manifests/
-kubectl get svc ping-pong-svc -n exercises
+kubectl apply -f ../log_output/manifests/
+kubectl get ingress -n exercises
 ```
 
-View at http://EXTERNAL-IP:2346/pingpong (See EXTERNAL-IP with the last command)
+View at http://ADDRESS/pingpong after some time. (See ADDRESS with the last command)
