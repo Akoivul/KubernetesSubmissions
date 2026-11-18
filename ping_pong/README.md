@@ -11,5 +11,14 @@ kubectl apply -f manifests/
 kubectl apply -f ../log_output/manifests/
 ```
 
-
 View at http://localhost:8081/pingpong after a short time.
+
+## Run in GKE
+
+```bash
+kubectl create namespace exercises
+kubectl apply -f manifests/
+kubectl get svc ping-pong-svc -n exercises
+```
+
+View at http://EXTERNAL-IP:2346/pingpong (See EXTERNAL-IP with the last command)
