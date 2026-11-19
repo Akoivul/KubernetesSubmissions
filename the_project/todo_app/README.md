@@ -14,3 +14,17 @@ kubectl apply -f ../todo_backend/manifests/
 ```
 
 View at http://localhost:8081 after a short time.
+
+## Run in GKE
+
+Make sure the cluster has Gateway API enabled.
+
+Run from the_project/:
+
+```bash
+kubectl create namespace project
+kubectl apply -k .
+kubectl get gateway -n project
+```
+
+View at http://ADDRESS/ after some time. (See ADDRESS with the last command)

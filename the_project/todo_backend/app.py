@@ -29,6 +29,11 @@ def init_db():
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        if self.path == "/":
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"ok")
+            return
         if self.path != "/todos":
             self.send_error(404)
             return
