@@ -1,10 +1,11 @@
-name: Deploy project
+name: Release application
 
 on:
   push:
     paths:
       - "the_project/**"
-      - ".github/workflows/project.yaml"
+      - ".github/workflows/main.yaml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -36,22 +37,34 @@ jobs:
           workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
           service_account: "${{ secrets.SERVICE_ACCOUNT }}"
 
-      - name: Set up Cloud SDK
+      - name: 'Set up Cloud SDK'
         uses: google-github-actions/setup-gcloud@v3
 
-      - run: gcloud --quiet auth configure-docker $REGISTRY
+      - name: 'Use gcloud CLI'
+        run: gcloud info
 
-      - name: Get GKE credentials
-        uses: google-github-actions/get-gke-credentials@v3
+      - name: 'Get GKE credentials'
+        uses: 'google-github-actions/get-gke-credentials@v3'
         with:
-          cluster_name: ${{ env.GKE_CLUSTER }}
-          project_id: ${{ env.PROJECT_ID }}
-          location: ${{ env.GKE_ZONE }}
+          cluster_name: '${{ env.GKE_CLUSTER }}'
+          project_id: '${{ env.PROJECT_ID }}'
+          location: '${{ env.GKE_ZONE }}'
 
-      - name: Form the image names
+      - name: 'Set up Docker Buildx'
+        run: gcloud auth configure-docker "$REGISTRY"
+
+      - name: 'Form the image name'
         run: |
           echo "TODO_APP_IMAGE=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
           echo "TODO_BACKEND_IMAGE=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
+
+      - name: 'Form the namespace'
+        run: |
+          if [ "${GITHUB_REF#refs/heads/}" = "main" ]; then
+            echo "NAMESPACE=project" >> $GITHUB_ENV
+          else
+            echo "NAMESPACE=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          fi
 
       - name: Build
         run: |
@@ -67,10 +80,12 @@ jobs:
         uses: imranismail/setup-kustomize@v3
 
       - name: Deploy
-        run: |
-          kubectl create namespace project --dry-run=client -o yaml | kubectl apply -f -
+        run: |-
+          kubectl create namespace $NAMESPACE || true
+          kubectl config set-context --current --namespace=$NAMESPACE
+          kustomize edit set namespace $NAMESPACE
           kustomize edit set image akoivul/todo-app=$TODO_APP_IMAGE akoivul/todo-backend=$TODO_BACKEND_IMAGE
           kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment todo-app-dep -n project
-          kubectl rollout status deployment todo-backend -n project
-          kubectl get gateway -n project
+          kubectl rollout status deployment todo-app-dep
+          kubectl rollout status deployment todo-backend
+          kubectl get services -o wide

@@ -23,7 +23,7 @@ HTML = """<!DOCTYPE html>
     <h1>Todo app</h1>
     <img src="/image" width="600">
     <form method="post" action="/todos">
-    <h3>Write your todos here:</h3>
+    <h3>Write todos here:</h3>
       <input type="text" name="todo" maxlength="140">
       <button type="submit">Send</button>
     </form>
