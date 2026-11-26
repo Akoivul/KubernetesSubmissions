@@ -19,6 +19,13 @@ View at http://localhost:8081 after a short time.
 
 Make sure the cluster has Gateway API enabled.
 
+To run the backup CronJob, first create the key:
+
+```bash
+kubectl create secret generic storage-sa-key -n project --from-file=key.json=<path to key file>
+kubectl apply -f backup/backup-cronjob.yaml
+```
+
 Run from the_project/:
 
 ```bash
@@ -28,7 +35,6 @@ kubectl get gateway -n project
 ```
 
 View at http://ADDRESS/ after some time. (See ADDRESS with the last command)
-
 
 
 ## Exercise 3.9:
