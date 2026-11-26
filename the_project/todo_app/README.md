@@ -28,3 +28,29 @@ kubectl get gateway -n project
 ```
 
 View at http://ADDRESS/ after some time. (See ADDRESS with the last command)
+
+
+
+## Exercise 3.9:
+
+### DBaaS:
+
+Pros:
+- Required work for setting up and maintenance is small
+- Automated backups are built in
+- A backup can be restored with a single operation in the console
+
+Cons:
+- Costs to initialize and maintain are higher
+- Extra cost because of backup storage
+
+### DIY:
+
+Pros:
+- No extra costs
+
+Cons:
+- Required work for setting up is higher as files have to be written manually
+- Required work for maintenance is higher as everything needs to be done manually
+- No backups by default and need to be built
+- Restoring requires more work as everything is done manually
