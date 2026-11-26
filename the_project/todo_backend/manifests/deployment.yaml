@@ -16,6 +16,13 @@ spec:
       containers:
         - name: todo-backend
           image: akoivul/todo-backend:3.5
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "32Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
           env:
             - name: PORT
               value: "3000"
